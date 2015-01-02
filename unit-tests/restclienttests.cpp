@@ -188,3 +188,29 @@ void RestClientTests::testTokenAuthenticatedGet() {
 
     delete jsonResponse;
 }
+
+void RestClientTests::testHeaders() {
+    RestClient client;
+    client.setAuthenticationMode(RestClient::AuthenticationMode::Basic);
+    QString accept(RestClient::Json);
+    client.setAccept(&accept);
+    client.addCustomHeader("Date", QDateTime::currentDateTime().toString(Qt::DateFormat::RFC2822Date));
+
+    BasicCredentials* credentials = new BasicCredentials();
+    credentials->setUsername(new QString("eu"));
+    credentials->setPassword(new QString("123"));
+    client.setCredentials(credentials);
+
+    QJsonDocument* jsonResponse = client.getJson(QUrl(QString("http://localhost:5000/api/token")));
+    QCOMPARE(client.statusCode(), 200);
+    if (!jsonResponse) {
+        QFAIL("Request execution failed");
+    }
+
+    QJsonObject jsonRootObject = jsonResponse->object();
+
+    QCOMPARE(jsonRootObject.value("duration").toInt(), 600);
+    QVERIFY(!jsonRootObject.value("token").toString().isEmpty());
+
+    delete jsonResponse;
+}

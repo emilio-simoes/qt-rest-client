@@ -20,10 +20,6 @@ RestClient::~RestClient() {
         delete _manager;
         _manager = NULL;
     }
-    if (_accept) {
-        delete _accept;
-        _accept = NULL;
-    }
 }
 
 const QString RestClient::Json = "application/json";
@@ -138,6 +134,14 @@ void RestClient::setCredentials(Credentials* credentials) {
     _credentials = credentials;
 }
 
+void RestClient::addCustomHeader(const QString& name, const QString& value) {
+    _headers.insert(QString(name), QString(value));
+}
+
+void RestClient::clearCustomHeaders() {
+    _headers.clear();
+}
+
 void RestClient::setAuthenticationMode(RestClient::AuthenticationMode mode) {
     if (_authenticationMode == mode) {
         return;
@@ -204,6 +208,7 @@ QNetworkReply* RestClient::doGet(const QUrl& url) {
     QNetworkRequest request(url);
     setBasicAuthentication(request);
     setAccept(request);
+    setCustomHeaders(request);
     QNetworkReply* reply = _manager->get(request);
     return reply;
 }
@@ -213,6 +218,7 @@ QNetworkReply* RestClient::doDelete(const QUrl& url) {
     QNetworkRequest request(url);
     setBasicAuthentication(request);
     setAccept(request);
+    setCustomHeaders(request);
     QNetworkReply* reply = _manager->deleteResource(request);
     return reply;
 }
@@ -222,6 +228,7 @@ QNetworkReply* RestClient::doPost(const QUrl& url, const QByteArray& body) {
     QNetworkRequest request(url);
     setBasicAuthentication(request);
     setAccept(request);
+    setCustomHeaders(request);
     setContentType(request);
     QNetworkReply* reply = _manager->post(request, body);
     return reply;
@@ -232,6 +239,7 @@ QNetworkReply* RestClient::doPut(const QUrl& url, const QByteArray& body) {
     QNetworkRequest request(url);
     setBasicAuthentication(request);
     setAccept(request);
+    setCustomHeaders(request);
     setContentType(request);
     QNetworkReply* reply = _manager->put(request, body);
     return reply;
@@ -301,6 +309,18 @@ void RestClient::setContentType(QNetworkRequest& request) {
     }
 
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, _contentType);
+}
+
+void RestClient::setCustomHeaders(QNetworkRequest& request) {
+    if (_headers.isEmpty()) {
+        return;
+    }
+
+    foreach (QString key, _headers.keys()) {
+        QByteArray name = key.toLatin1();
+        QByteArray value = _headers[name].toLatin1();
+        request.setRawHeader(name, value);
+    }
 }
 
 int RestClient::getStatusCode(QNetworkReply* reply) {

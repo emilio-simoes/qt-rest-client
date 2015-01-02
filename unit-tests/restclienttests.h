@@ -24,6 +24,7 @@ class RestClientTests : public QObject {
         void testDelete();
         void testAuthenticatedGet();
         void testTokenAuthenticatedGet();
+        void testHeaders();
 };
 
 DECLARE_TEST(RestClientTests)

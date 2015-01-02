@@ -55,6 +55,9 @@ class RestClient : public QObject {
         QString statusMessage() const;
         void setCredentials(Credentials* credentials);
 
+        void addCustomHeader(const QString& name, const QString& value);
+        void clearCustomHeaders();
+
     public slots:
         void setAuthenticationMode(AuthenticationMode mode);
         void setContentType(QString contentType);
@@ -87,6 +90,8 @@ class RestClient : public QObject {
         int _statusCode;
         QString _statusMessage;
 
+        QMap<QString, QString> _headers;
+
         QNetworkReply* doGet(const QUrl& url);
         QNetworkReply* doDelete(const QUrl& url);
         QNetworkReply* doPost(const QUrl& url, const QByteArray& body);
@@ -96,6 +101,7 @@ class RestClient : public QObject {
         void setBasicAuthentication(QNetworkRequest& request);
         void setAccept(QNetworkRequest& request);
         void setContentType(QNetworkRequest& request);
+        void setCustomHeaders(QNetworkRequest& request);
         int getStatusCode(QNetworkReply* reply);
 };
 
