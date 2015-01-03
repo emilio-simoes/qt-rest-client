@@ -1,7 +1,37 @@
+/*
+ * Qt REST Client
+ * Copyright (C) 2014 Emílio Simões
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/*!
+ * \class RestClient
+ * \since 1.0
+ *
+ * This class is a simple REST client for use with Qt/C++.
+ * It supports the most common HTTP verbs like GET, POST, PUT and DELETE.
+ * It also contains support for Basic HTTP Autentication.
+ */
 #include "restclient.h"
 
 #include <QEventLoop>
 
+/*!
+  \fn RestClient::RestClient(QObject *parent)
+ * \brief Constructor for the RestClient.
+ * \param parent The parent QObject for the RestClient.
+ */
 RestClient::RestClient(QObject* parent) : QObject(parent) {
     _manager = new QNetworkAccessManager(this);
     connect(_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finishedRequest(QNetworkReply*)));
@@ -15,6 +45,10 @@ RestClient::RestClient(QObject* parent) : QObject(parent) {
     _statusMessage = QString();
 }
 
+/*!
+  \fn RestClient::~RestClient()
+ * \brief Destructor for the RestClient.
+ */
 RestClient::~RestClient() {
     if (_manager) {
         delete _manager;
